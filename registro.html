@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connecting Friends - Registro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #F5E6D3 0%, #E8D5C4 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .decorative-leaf {
+            position: absolute;
+            opacity: 0.6;
+        }
+        
+        .register-container {
+            background: white;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+        
+        .brand-color {
+            color: #1E293B;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #F59E42 0%, #E8844A 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(245, 158, 66, 0.4);
+        }
+        
+        .input-field {
+            border: 2px solid #E5E7EB;
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            border-color: #F59E42;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(245, 158, 66, 0.1);
+        }
+        
+        .illustration {
+            background: linear-gradient(135deg, #4A9B9B 0%, #3D8686 100%);
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .password-strength {
+            height: 4px;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+    
+    <!-- Decorative elements -->
+    <div class="decorative-leaf" style="top: 10%; left: 5%; width: 60px; height: 60px; background: #F59E42; border-radius: 50% 0% 50% 50%; transform: rotate(-45deg);"></div>
+    <div class="decorative-leaf" style="top: 20%; right: 8%; width: 80px; height: 80px; background: #4A9B9B; border-radius: 50% 50% 0% 50%; transform: rotate(30deg);"></div>
+    <div class="decorative-leaf" style="bottom: 15%; left: 10%; width: 50px; height: 50px; background: #E8844A; border-radius: 50%; opacity: 0.4;"></div>
+    
+    <div class="register-container w-full max-w-5xl grid md:grid-cols-2 gap-0">
+        
+        <!-- Left Side - Illustration -->
+        <div class="illustration hidden md:flex flex-col items-center justify-center p-12 text-white relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-32 h-32 bg-white opacity-10 rounded-full -translate-x-16 -translate-y-16"></div>
+            <div class="absolute bottom-0 right-0 w-40 h-40 bg-white opacity-10 rounded-full translate-x-20 translate-y-20"></div>
+            
+            <div class="text-center z-10 floating">
+                <i class="fas fa-user-plus text-8xl mb-6 opacity-90"></i>
+                <h2 class="text-4xl font-bold mb-4">¡Únete a Nosotros!</h2>
+                <p class="text-lg opacity-90">Crea tu cuenta y comienza</p>
+                <p class="text-sm mt-2 opacity-75">a organizar eventos increíbles</p>
+            </div>
+            
+            <div class="absolute bottom-8 left-8 flex gap-2">
+                <div class="w-3 h-3 bg-white rounded-full opacity-30"></div>
+                <div class="w-3 h-3 bg-white rounded-full opacity-50"></div>
+                <div class="w-3 h-3 bg-white rounded-full opacity-30"></div>
+            </div>
+        </div>
+        
+        <!-- Right Side - Register Form -->
+        <div class="p-12 flex flex-col justify-center max-h-screen overflow-y-auto">
+            
+            <!-- Mobile Header -->
+            <div class="md:hidden text-center mb-8">
+                <i class="fas fa-users text-5xl mb-3" style="color: #4A9B9B;"></i>
+                <h2 class="text-3xl font-bold brand-color">Connecting Friends</h2>
+            </div>
+            
+            <div class="mb-6">
+                <h1 class="text-3xl font-bold brand-color mb-2">Crear Cuenta</h1>
+                <p class="text-gray-600">Completa el formulario para registrarte</p>
+            </div>
+            
+            <form id="register-form" class="space-y-4">
+                
+                <!-- Name Input -->
+                <div>
+                    <label for="name" class="block text-sm font-semibold brand-color mb-2">
+                        <i class="fas fa-user mr-2"></i>Nombre Completo
+                    </label>
+                    <input 
+                        type="text" 
+                        id="name" 
+                        name="name"
+                        class="input-field w-full px-4 py-3 rounded-xl" 
+                        placeholder="Juan Pérez"
+                        required
+                    >
+                </div>
+                
+                <!-- Email Input -->
+                <div>
+                    <label for="email" class="block text-sm font-semibold brand-color mb-2">
+                        <i class="fas fa-envelope mr-2"></i>Correo Electrónico
+                    </label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email"
+                        class="input-field w-full px-4 py-3 rounded-xl" 
+                        placeholder="tu@email.com"
+                        required
+                    >
+                </div>
+                
+                <!-- Password Input -->
+                <div>
+                    <label for="password" class="block text-sm font-semibold brand-color mb-2">
+                        <i class="fas fa-lock mr-2"></i>Contraseña
+                    </label>
+                    <div class="relative">
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password"
+                            class="input-field w-full px-4 py-3 rounded-xl pr-12" 
+                            placeholder="••••••••"
+                            required
+                            oninput="checkPasswordStrength()"
+                        >
+                        <button 
+                            type="button" 
+                            onclick="togglePassword('password')"
+                            class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                        >
+                            <i class="fas fa-eye" id="toggle-icon-password"></i>
+                        </button>
+                    </div>
+                    <div class="mt-2">
+                        <div class="password-strength bg-gray-200" id="password-strength-bar"></div>
+                        <p class="text-xs text-gray-500 mt-1" id="password-strength-text">Mínimo 6 caracteres</p>
+                    </div>
+                </div>
+                
+                <!-- Confirm Password Input -->
+                <div>
+                    <label for="confirm-password" class="block text-sm font-semibold brand-color mb-2">
+                        <i class="fas fa-lock mr-2"></i>Confirmar Contraseña
+                    </label>
+                    <div class="relative">
+                        <input 
+                            type="password" 
+                            id="confirm-password" 
+                            name="confirm-password"
+                            class="input-field w-full px-4 py-3 rounded-xl pr-12" 
+                            placeholder="••••••••"
+                            required
+                        >
+                        <button 
+                            type="button" 
+                            onclick="togglePassword('confirm-password')"
+                            class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                        >
+                            <i class="fas fa-eye" id="toggle-icon-confirm-password"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Terms & Conditions -->
+                <div class="flex items-start">
+                    <input type="checkbox" id="terms" class="mt-1 mr-2 rounded" required>
+                    <label for="terms" class="text-sm text-gray-600">
+                        Acepto los <a href="#" class="text-orange-500 hover:text-orange-600 font-semibold">Términos y Condiciones</a> 
+                        y la <a href="#" class="text-orange-500 hover:text-orange-600 font-semibold">Política de Privacidad</a>
+                    </label>
+                </div>
+                
+                <!-- Register Button -->
+                <button 
+                    type="submit" 
+                    class="btn-primary w-full py-4 rounded-xl text-white font-bold text-lg mt-6"
+                >
+                    Crear Cuenta
+                </button>
+                
+                <!-- Login Link -->
+                <p class="text-center text-gray-600 mt-6">
+                    ¿Ya tienes una cuenta? 
+                    <a href="login.html" class="text-orange-500 hover:text-orange-600 font-bold">Inicia sesión aquí</a>
+                </p>
+            </form>
+            
+            <!-- Success/Error Messages -->
+            <div id="success-message" class="hidden mt-4 p-4 bg-green-50 border-l-4 border-green-500 rounded-lg">
+                <div class="flex items-center">
+                    <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                    <p class="text-green-700 text-sm" id="success-text"></p>
+                </div>
+            </div>
+            
+            <div id="error-message" class="hidden mt-4 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg">
+                <div class="flex items-center">
+                    <i class="fas fa-exclamation-circle text-red-500 mr-3"></i>
+                    <p class="text-red-700 text-sm" id="error-text"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Toggle password visibility
+        function togglePassword(fieldId) {
+            const passwordInput = document.getElementById(fieldId);
+            const toggleIcon = document.getElementById('toggle-icon-' + fieldId);
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+        
+        // Check password strength
+        function checkPasswordStrength() {
+            const password = document.getElementById('password').value;
+            const strengthBar = document.getElementById('password-strength-bar');
+            const strengthText = document.getElementById('password-strength-text');
+            
+            let strength = 0;
+            
+            if (password.length >= 6) strength++;
+            if (password.length >= 10) strength++;
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+            if (/\d/.test(password)) strength++;
+            if (/[^a-zA-Z\d]/.test(password)) strength++;
+            
+            switch(strength) {
+                case 0:
+                case 1:
+                    strengthBar.style.width = '25%';
+                    strengthBar.style.backgroundColor = '#EF4444';
+                    strengthText.textContent = 'Muy débil';
+                    strengthText.style.color = '#EF4444';
+                    break;
+                case 2:
+                    strengthBar.style.width = '50%';
+                    strengthBar.style.backgroundColor = '#F59E0B';
+                    strengthText.textContent = 'Débil';
+                    strengthText.style.color = '#F59E0B';
+                    break;
+                case 3:
+                    strengthBar.style.width = '75%';
+                    strengthBar.style.backgroundColor = '#FBBF24';
+                    strengthText.textContent = 'Buena';
+                    strengthText.style.color = '#FBBF24';
+                    break;
+                case 4:
+                case 5:
+                    strengthBar.style.width = '100%';
+                    strengthBar.style.backgroundColor = '#10B981';
+                    strengthText.textContent = 'Muy fuerte';
+                    strengthText.style.color = '#10B981';
+                    break;
+            }
+        }
+        
+        // Handle register form submission
+        document.getElementById('register-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            // Validate passwords match
+            if (password !== confirmPassword) {
+                document.getElementById('error-text').textContent = 'Las contraseñas no coinciden';
+                document.getElementById('error-message').classList.remove('hidden');
+                setTimeout(() => {
+                    document.getElementById('error-message').classList.add('hidden');
+                }, 5000);
+                return;
+            }
+            
+            // Validate password length
+            if (password.length < 6) {
+                document.getElementById('error-text').textContent = 'La contraseña debe tener al menos 6 caracteres';
+                document.getElementById('error-message').classList.remove('hidden');
+                setTimeout(() => {
+                    document.getElementById('error-message').classList.add('hidden');
+                }, 5000);
+                return;
+            }
+            
+            try {
+                const response = await fetch('registro.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        name: name,
+                        email: email,
+                        password: password
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Show success message
+                    document.getElementById('success-text').textContent = result.message;
+                    document.getElementById('success-message').classList.remove('hidden');
+                    
+                    // Reset form
+                    document.getElementById('register-form').reset();
+                    document.getElementById('password-strength-bar').style.width = '0%';
+                    
+                    // Redirect to login after 2 seconds
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 2000);
+                } else {
+                    // Show error message
+                    document.getElementById('error-text').textContent = result.message;
+                    document.getElementById('error-message').classList.remove('hidden');
+                    
+                    setTimeout(() => {
+                        document.getElementById('error-message').classList.add('hidden');
+                    }, 5000);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('error-text').textContent = 'Error de conexión. Intenta nuevamente.';
+                document.getElementById('error-message').classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

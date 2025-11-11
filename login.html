@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connecting Friends - Iniciar Sesión</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --bg-dark: #121212;
+            --bg-card: #1E1E1E;
+            --text-light: #B0B0B0;
+            --text-white: #FFFFFF;
+            --accent-blue: #7047EB;
+            --accent-orange: #F59E42;
+            --border-color: #333333;
+        }
+        
+        body {
+            background-color: var(--bg-dark);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-white);
+        }
+        
+        .mobile-container {
+            max-width: 400px;
+            min-height: 100vh;
+            margin: 0 auto;
+            background-color: var(--bg-dark);
+            position: relative;
+        }
+        
+        .decorative-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.15;
+            pointer-events: none;
+        }
+        
+        .blob-1 {
+            width: 200px;
+            height: 200px;
+            background: var(--accent-orange);
+            top: -50px;
+            right: -50px;
+        }
+        
+        .blob-2 {
+            width: 250px;
+            height: 250px;
+            background: var(--accent-blue);
+            bottom: 100px;
+            left: -80px;
+        }
+        
+        .logo-container {
+            padding: 40px 0 20px 0;
+            text-align: center;
+        }
+        
+        .logo-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-blue));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            box-shadow: 0 10px 30px rgba(112, 71, 235, 0.3);
+        }
+        
+        .input-field {
+            background-color: var(--bg-card);
+            border: 2px solid var(--border-color);
+            color: var(--text-white);
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            border-color: var(--accent-blue);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(112, 71, 235, 0.1);
+        }
+        
+        .input-field::placeholder {
+            color: var(--text-light);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-orange));
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(112, 71, 235, 0.4);
+        }
+        
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: var(--text-light);
+            margin: 25px 0;
+        }
+        
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .divider span {
+            padding: 0 15px;
+            font-size: 14px;
+        }
+        
+        .social-btn {
+            background-color: var(--bg-card);
+            border: 2px solid var(--border-color);
+            color: var(--text-white);
+            transition: all 0.3s ease;
+        }
+        
+        .social-btn:hover {
+            border-color: var(--accent-blue);
+            background-color: rgba(112, 71, 235, 0.1);
+        }
+        
+        .checkbox-custom {
+            accent-color: var(--accent-blue);
+        }
+        
+        .error-message {
+            background-color: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid #EF4444;
+        }
+        
+        .floating-animation {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="mobile-container">
+        <!-- Decorative blobs -->
+        <div class="decorative-blob blob-1"></div>
+        <div class="decorative-blob blob-2"></div>
+        
+        <div class="px-6 py-8 relative z-10">
+            
+            <!-- Logo & Header -->
+            <div class="logo-container">
+                <div class="logo-icon floating-animation">
+                    <i class="fas fa-users text-4xl text-white"></i>
+                </div>
+                <h1 class="text-3xl font-bold mb-2">Connecting Friends</h1>
+                <p class="text-sm" style="color: var(--text-light);">Gestiona tus eventos y reuniones</p>
+            </div>
+            
+            <!-- Welcome Message -->
+            <div class="mt-10 mb-6">
+                <h2 class="text-2xl font-bold mb-2">¡Bienvenido de nuevo! 👋</h2>
+                <p style="color: var(--text-light);">Inicia sesión para continuar</p>
+            </div>
+            
+            <!-- Login Form -->
+            <form id="login-form" class="space-y-5">
+                
+                <!-- Email Input -->
+                <div>
+                    <label for="email" class="block text-sm font-semibold mb-2">
+                        Correo Electrónico
+                    </label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2" style="color: var(--text-light);">
+                            <i class="fas fa-envelope"></i>
+                        </span>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email"
+                            class="input-field w-full pl-12 pr-4 py-4 rounded-xl text-base" 
+                            placeholder="tu@email.com"
+                            required
+                        >
+                    </div>
+                </div>
+                
+                <!-- Password Input -->
+                <div>
+                    <label for="password" class="block text-sm font-semibold mb-2">
+                        Contraseña
+                    </label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2" style="color: var(--text-light);">
+                            <i class="fas fa-lock"></i>
+                        </span>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password"
+                            class="input-field w-full pl-12 pr-14 py-4 rounded-xl text-base" 
+                            placeholder="••••••••"
+                            required
+                        >
+                        <button 
+                            type="button" 
+                            onclick="togglePassword()"
+                            class="absolute right-4 top-1/2 -translate-y-1/2"
+                            style="color: var(--text-light);"
+                        >
+                            <i class="fas fa-eye" id="toggle-icon"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Remember Me & Forgot Password -->
+                <div class="flex items-center justify-between">
+                    <label class="flex items-center cursor-pointer">
+                        <input type="checkbox" class="checkbox-custom mr-2 w-4 h-4" checked>
+                        <span class="text-sm" style="color: var(--text-light);">Recordarme</span>
+                    </label>
+                    <a href="#" class="text-sm font-semibold" style="color: var(--accent-blue);">
+                        ¿Olvidaste tu contraseña?
+                    </a>
+                </div>
+                
+                <!-- Login Button -->
+                <button 
+                    type="submit" 
+                    class="btn-primary w-full py-4 rounded-xl font-bold text-lg mt-8"
+                >
+                    Iniciar Sesión
+                </button>
+                
+                <!-- Divider -->
+                <div class="divider">
+                    <span>o continúa con</span>
+                </div>
+                
+                <!-- Social Login Buttons -->
+                <div class="grid grid-cols-2 gap-4">
+                    <button type="button" class="social-btn py-4 rounded-xl font-semibold flex items-center justify-center gap-2">
+                        <i class="fab fa-google text-red-500 text-lg"></i>
+                        Google
+                    </button>
+                    <button type="button" class="social-btn py-4 rounded-xl font-semibold flex items-center justify-center gap-2">
+                        <i class="fab fa-facebook text-blue-500 text-lg"></i>
+                        Facebook
+                    </button>
+                </div>
+                
+                <!-- Register Link -->
+                <p class="text-center mt-8" style="color: var(--text-light);">
+                    ¿No tienes una cuenta? 
+                    <a href="registro.html" class="font-bold" style="color: var(--accent-blue);">
+                        Regístrate aquí
+                    </a>
+                </p>
+            </form>
+            
+            <!-- Error Message -->
+            <div id="error-message" class="hidden mt-6 p-4 error-message rounded-xl">
+                <div class="flex items-start gap-3">
+                    <i class="fas fa-exclamation-circle text-red-500 text-lg mt-0.5"></i>
+                    <p class="text-red-400 text-sm flex-1" id="error-text"></p>
+                </div>
+            </div>
+            
+            <!-- Footer Space -->
+            <div class="h-20"></div>
+            
+        </div>
+    </div>
+    
+    <script>
+        // Toggle password visibility
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('toggle-icon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+        
+        // Handle login form submission
+        document.getElementById('login-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch('login.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        email: email,
+                        password: password
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Redirect to main app
+                    window.location.href = 'index.php';
+                } else {
+                    // Show error message
+                    document.getElementById('error-text').textContent = result.message;
+                    document.getElementById('error-message').classList.remove('hidden');
+                    
+                    setTimeout(() => {
+                        document.getElementById('error-message').classList.add('hidden');
+                    }, 5000);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('error-text').textContent = 'Error de conexión. Intenta nuevamente.';
+                document.getElementById('error-message').classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
