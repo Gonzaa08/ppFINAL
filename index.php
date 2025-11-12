@@ -157,7 +157,6 @@ $user_email = $_SESSION['user_email'] ?? '';
         </button>
     </div>
     
-    <!-- Tabs de filtros -->
     <div class="payment-tabs mb-4">
         <button class="payment-tab active" data-filter="all" onclick="filterPaymentsByTab('all', this)">
             <i class="fas fa-list"></i>
@@ -174,7 +173,6 @@ $user_email = $_SESSION['user_email'] ?? '';
         </button>
     </div>
     
-    <!-- Estadísticas -->
     <div id="payment-stats" class="payment-stats-grid mb-4 hidden">
         <div class="stat-card">
             <i class="fas fa-check-circle text-green-500"></i>
@@ -199,7 +197,6 @@ $user_email = $_SESSION['user_email'] ?? '';
         </div>
     </div>
     
-    <!-- Búsqueda -->
     <div class="flex items-center gap-2 mb-4">
         <input type="text" id="payment-search" class="form-control flex-grow mb-0" placeholder="Buscar pago..." oninput="searchPayments(this.value)">
         <button onclick="togglePaymentFilters()" class="bg-gray-700 text-white px-4 py-3 rounded-lg hover:bg-gray-600 transition">
@@ -207,7 +204,6 @@ $user_email = $_SESSION['user_email'] ?? '';
         </button>
     </div>
     
-    <!-- Filtros avanzados (ocultos por defecto) -->
     <div id="advanced-filters" class="advanced-filters hidden mb-4">
         <div class="filter-group">
             <label class="filter-label">Estado</label>
@@ -232,18 +228,14 @@ $user_email = $_SESSION['user_email'] ?? '';
         </div>
     </div>
     
-    <!-- Lista de pagos -->
     <div id="payments-list" class="flex flex-col space-y-3">
-        <!-- Se llenará dinámicamente -->
-    </div>
+        </div>
     
-    <!-- Loading -->
     <div id="payments-loading" class="text-center py-8 hidden">
         <i class="fas fa-spinner fa-spin text-4xl text-accent-blue"></i>
         <p class="text-text-light mt-2">Cargando pagos...</p>
     </div>
     
-    <!-- Empty state -->
     <div id="payments-empty" class="text-center py-12 hidden">
         <i class="fas fa-receipt text-6xl text-gray-600 mb-4"></i>
         <p class="text-text-light text-lg">No hay pagos para mostrar</p>
@@ -251,7 +243,6 @@ $user_email = $_SESSION['user_email'] ?? '';
     </div>
 </div>
 
-<!-- Modal de detalle de pago -->
 <div id="payment-detail-modal" class="payment-modal hidden">
     <div class="payment-modal-content">
         <div class="payment-modal-header">
@@ -261,8 +252,7 @@ $user_email = $_SESSION['user_email'] ?? '';
             </button>
         </div>
         <div id="payment-detail-body" class="payment-modal-body">
-            <!-- Se llenará dinámicamente -->
-        </div>
+            </div>
     </div>
 </div>
 
@@ -335,7 +325,63 @@ $user_email = $_SESSION['user_email'] ?? '';
     </div>
 </div>
 
+<div id="event-summary-modal" class="modal-overlay hidden">
+    <div class="modal-content" style="max-width: 600px;">
+        <div class="modal-header">
+            <h3 class="modal-title">📊 Resumen del Evento</h3>
+            <button class="modal-close-btn" onclick="closeEventSummaryModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body" id="event-summary-body">
+            </div>
+    </div>
+</div>
+
+<div id="monthly-report-modal" class="modal-overlay hidden">
+    <div class="modal-content" style="max-width: 700px; max-height: 90vh;">
+        <div class="modal-header">
+            <h3 class="modal-title">📅 Reporte Mensual</h3>
+            <button class="modal-close-btn" onclick="closeMonthlyReportModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div id="monthly-report-loading" class="text-center py-8">
+                <i class="fas fa-spinner fa-spin text-4xl mb-3" style="color: var(--accent-blue);"></i>
+                <p class="text-text-light">Cargando reporte...</p>
+            </div>
+            
+            <div id="monthly-report-content" class="hidden">
+                </div>
+        </div>
+    </div>
+</div>
+
+<button onclick="showMonthlyReport()" class="floating-button" title="Ver Reporte Mensual" style="
+    position: fixed;
+    bottom: 100px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #F59E42, #7047EB);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 20px rgba(245, 158, 66, 0.4);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 900;
+    border: none;
+">
+    <i class="fas fa-file-invoice" style="color: white; font-size: 24px;"></i>
+</button>
+
 <script>
+// Funciones JS simples (logout, preview)
+// Esto asegura que el código PHP/HTML que estaba aquí se mueva, evitando el error de sintaxis.
+
 // Función de logout
 function logout() {
     if (confirm('¿Estás seguro que deseas cerrar sesión?')) {
@@ -356,6 +402,140 @@ document.getElementById('event-image').addEventListener('change', function(e) {
     }
 });
 </script>
+
+<style>
+.floating-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 12px 30px rgba(245, 158, 66, 0.6);
+}
+
+/* Estilos para los modales de reportes */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.modal-content {
+    background-color: var(--bg-dark);
+    border-radius: 20px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    border: 2px solid var(--border-color);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.modal-header {
+    padding: 20px;
+    border-bottom: 2px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    background-color: var(--bg-dark);
+    z-index: 10;
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--text-white);
+}
+
+.modal-close-btn {
+    background: none;
+    border: none;
+    color: var(--text-light);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    padding: 5px 10px;
+}
+
+.modal-close-btn:hover {
+    color: var(--text-white);
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+/* Scrollbar personalizado */
+.modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: var(--bg-card);
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: var(--accent-blue);
+    border-radius: 4px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: #F59E42;
+}
+
+/* Animación de aparición */
+.modal-overlay:not(.hidden) {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* 🛑 REGLA CLAVE PARA OCULTAR ELEMENTOS POR DEFECTO 🛑 */
+.hidden {
+    display: none !important;
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+    .floating-button {
+        bottom: 90px;
+        right: 15px;
+        width: 56px;
+        height: 56px;
+    }
+    
+    .floating-button i {
+        font-size: 20px;
+    }
+    
+    .modal-content {
+        border-radius: 15px;
+    }
+    
+    .modal-header {
+        padding: 15px;
+    }
+    
+    .modal-title {
+        font-size: 1.2rem;
+    }
+    
+    .modal-body {
+        padding: 15px;
+    }
+}
+</style>
+
 <script src="script.js"></script>
+
 </body>
 </html>

@@ -727,34 +727,362 @@ function editCurrentEvent() {
     navigate('screen-create-event');
 }
 
-function generateReport() {
-    const event = db.events.find(e => e.id === activeEventId);
-    if (!event) {
-        alert("Seleccione un evento para generar el reporte.");
+// ===============================================
+// FUNCIONES AUXILIARES (Asumo que existen)
+// ===============================================
+// La corrección asume que las funciones formatDate, formatCurrency 
+// y la variable activeEventId están definidas en otra parte de tu proyecto.
+// ===============================================
+
+
+// ===============================================
+// RF5: RESUMEN DEL EVENTO
+// ===============================================
+
+async function generateReport() {
+    // La variable activeEventId debe estar definida globalmente
+    if (!activeEventId) {
+        alert("❌ Seleccione un evento para generar el reporte.");
         return;
     }
-
-    const eventPayments = db.payments.filter(p => p.eventId === activeEventId && p.status === 'confirmed');
-    const confirmedPayments = eventPayments.reduce((sum, p) => sum + p.amount, 0);
-    const pendingPayments = db.payments.filter(p => p.eventId === activeEventId && p.status !== 'confirmed').reduce((sum, p) => sum + p.amount, 0);
     
-    const eventParticipants = db.participants.filter(p => p.eventId === activeEventId);
-    const totalParticipants = eventParticipants.length;
-    const confirmedAssistances = eventParticipants.filter(p => p.confirmed).length;
-    
-    console.log("=========================================");
-    console.log(`  RESUMEN DEL EVENTO: '${event.title}'`);
-    console.log("=========================================");
-    console.log(`Fecha: ${formatDate(event.date)}`);
-    console.log(`Total Cupos: ${event.capacity === 0 ? 'Ilimitada' : event.capacity}`);
-    console.log(`Participantes Registrados: ${totalParticipants}`);
-    console.log(`Asistencias Confirmadas: ${confirmedAssistances}`);
-    console.log(`Recaudación (Pagos Confirmados): ${formatCurrency(confirmedPayments)}`);
-    console.log(`Pagos Pendientes/Procesando: ${formatCurrency(pendingPayments)}`);
-    console.log(`Potencial a Recaudar: ${formatCurrency(event.capacity * event.costPerPerson)}`);
-    console.log("=========================================");
+    try {
+        const response = await fetch(`obtener_resumen_evento.php?event_id=${activeEventId}`);
+        const result = await response.json();
+        
+        if (result.success) {
+            showEventSummaryModal(result);
+        } else {
+            alert('❌ Error: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('❌ Error al generar el reporte');
+    }
+}
 
-    alert(`Reporte generado para '${event.title}'. Revise la consola (F12).`);
+function showEventSummaryModal(data) {
+    const modalBody = document.getElementById('event-summary-body');
+    if (!modalBody) return;
+    
+    const event = data.event;
+    const participants = data.participants;
+    const payments = data.payments;
+    const capacity = data.capacity;
+    
+    // Generación dinámica del contenido (Tu código original)
+    modalBody.innerHTML = `
+        <div class="space-y-6">
+            <div class="text-center pb-4 border-b border-border-color">
+                <h3 class="text-2xl font-bold text-white mb-2">${event.title}</h3>
+                <p class="text-text-light">${formatDate(event.date)} • ${event.location}</p>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-bg-card p-4 rounded-lg border border-border-color">
+                    <div class="text-text-light text-sm mb-1">Participantes</div>
+                    <div class="text-2xl font-bold text-white">${participants.total}</div>
+                    <div class="text-xs text-text-light mt-1">
+                        ${participants.confirmed} confirmados • ${participants.pending} pendientes
+                    </div>
+                </div>
+                
+                <div class="bg-bg-card p-4 rounded-lg border border-border-color">
+                    <div class="text-text-light text-sm mb-1">Capacidad</div>
+                    <div class="text-2xl font-bold text-white">${capacity.total}</div>
+                    <div class="text-xs text-text-light mt-1">
+                        ${capacity.available !== 'N/A' ? `${capacity.available} disponibles` : 'Ilimitada'}
+                    </div>
+                </div>
+            </div>
+            
+            <div style="background: linear-gradient(135deg, rgba(112,71,235,0.2), rgba(147,51,234,0.2)); padding: 16px; border-radius: 12px; border: 1px solid rgba(112,71,235,0.3);">
+                <h4 class="text-white font-semibold mb-3 flex items-center gap-2">
+                    <i class="fas fa-dollar-sign"></i> Resumen Financiero
+                </h4>
+                
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-text-light">Pagos Confirmados</span>
+                        <span class="font-bold text-lg" style="color: #10B981;">${formatCurrency(payments.confirmed)}</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <span class="text-text-light">Pagos Pendientes</span>
+                        <span class="font-bold text-lg" style="color: #FACC15;">${formatCurrency(payments.pending)}</span>
+                    </div>
+                    
+                    ${payments.processing > 0 ? `
+                    <div class="flex justify-between items-center">
+                        <span class="text-text-light">En Proceso</span>
+                        <span class="font-bold text-lg" style="color: #3B82F6;">${formatCurrency(payments.processing)}</span>
+                    </div>
+                    ` : ''}
+                    
+                    <div style="border-top: 1px solid var(--border-color); padding-top: 12px; margin-top: 12px;">
+                        <div class="flex justify-between items-center">
+                            <span class="text-white font-semibold">Total Recaudado/Por Recaudar</span>
+                            <span class="text-white font-bold text-xl">${formatCurrency(payments.total)}</span>
+                        </div>
+                    </div>
+                    
+                    ${capacity.potential_revenue > 0 ? `
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-text-light">Potencial Máximo</span>
+                        <span class="text-text-light">${formatCurrency(capacity.potential_revenue)}</span>
+                    </div>
+                    ` : ''}
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-bg-card p-3 rounded-lg" style="border: 1px solid rgba(16,185,129,0.3);">
+                    <div class="font-semibold mb-1 flex items-center gap-2" style="color: #10B981;">
+                        <i class="fas fa-check-circle"></i> Confirmados
+                    </div>
+                    <div class="text-2xl font-bold text-white">${data.payment_counts.confirmed}</div>
+                </div>
+                
+                <div class="bg-bg-card p-3 rounded-lg" style="border: 1px solid rgba(250,204,21,0.3);">
+                    <div class="font-semibold mb-1 flex items-center gap-2" style="color: #FACC15;">
+                        <i class="fas fa-clock"></i> Pendientes
+                    </div>
+                    <div class="text-2xl font-bold text-white">${data.payment_counts.pending}</div>
+                </div>
+                
+                ${data.payment_counts.overdue > 0 ? `
+                <div class="bg-bg-card p-3 rounded-lg" style="border: 1px solid rgba(239,68,68,0.3);">
+                    <div class="font-semibold mb-1 flex items-center gap-2" style="color: #EF4444;">
+                        <i class="fas fa-exclamation-triangle"></i> Vencidos
+                    </div>
+                    <div class="text-2xl font-bold text-white">${data.payment_counts.overdue}</div>
+                </div>
+                ` : ''}
+                
+                ${data.payment_counts.processing > 0 ? `
+                <div class="bg-bg-card p-3 rounded-lg" style="border: 1px solid rgba(59,130,246,0.3);">
+                    <div class="font-semibold mb-1 flex items-center gap-2" style="color: #3B82F6;">
+                        <i class="fas fa-spinner"></i> Procesando
+                    </div>
+                    <div class="text-2xl font-bold text-white">${data.payment_counts.processing}</div>
+                </div>
+                ` : ''}
+            </div>
+            
+            <div class="flex gap-3 pt-4">
+                <button onclick="downloadEventReport()" class="flex-1 text-white py-3 rounded-lg font-semibold transition" style="background-color: var(--accent-blue);">
+                    <i class="fas fa-download mr-2"></i>Descargar
+                </button>
+                <button onclick="closeEventSummaryModal()" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg font-semibold transition">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    `;
+    
+    const modal = document.getElementById('event-summary-modal');
+    if (modal) modal.classList.remove('hidden'); // Muestra el modal
+}
+
+// 🛑 FUNCIÓN DE CIERRE DE RF5 (ASIGNADA AL BOTÓN 'X' Y 'CERRAR')
+function closeEventSummaryModal() {
+    const modal = document.getElementById('event-summary-modal');
+    if (modal) modal.classList.add('hidden'); // Oculta el modal
+}
+
+
+// ===============================================
+// RF9: REPORTE MENSUAL
+// ===============================================
+async function showMonthlyReport() {
+    const modal = document.getElementById('monthly-report-modal');
+    if (!modal) return;
+    
+    // 1. Muestra el modal inmediatamente
+    modal.classList.remove('hidden'); 
+    
+    // 2. Muestra el spinner de carga
+    const loadingEl = document.getElementById('monthly-report-loading');
+    if (loadingEl) loadingEl.classList.remove('hidden');
+
+    // 🛑 ATENCIÓN: COMENTAMOS LA LLAMADA COMPLEJA AL SERVIDOR
+    // await loadMonthlyReport(new Date().getMonth() + 1, new Date().getFullYear()); 
+    
+    // 3. Simula un retraso y luego oculta el spinner para mostrar el botón de cerrar
+    setTimeout(() => {
+        if (loadingEl) loadingEl.classList.add('hidden');
+        const contentEl = document.getElementById('monthly-report-content');
+        // Usamos un contenido de prueba para ver el botón 'Cerrar'
+        if (contentEl) {
+            contentEl.innerHTML = '<div class="p-5 text-center text-white">Prueba exitosa. Ahora presiona el botón Cerrar.</div>';
+            contentEl.classList.remove('hidden');
+        }
+    }, 1000); // Espera 1 segundo
+}
+
+// ... La función closeMonthlyReportModal() debe estar intacta y funcionando:
+function closeMonthlyReportModal() {
+    const modal = document.getElementById('monthly-report-modal');
+    if (modal) {
+        modal.classList.add('hidden'); // Oculta el modal
+    }
+}
+async function loadMonthlyReport(month, year) {
+    const loadingEl = document.getElementById('monthly-report-loading');
+    const contentEl = document.getElementById('monthly-report-content');
+    
+    // Muestra el spinner de carga y oculta el contenido
+    if (loadingEl) loadingEl.classList.remove('hidden');
+    if (contentEl) contentEl.classList.add('hidden');
+    
+    try {
+        const response = await fetch(`obtener_reporte_mensual.php?month=${month}&year=${year}`);
+        const result = await response.json();
+        
+        if (result.success) {
+            renderMonthlyReport(result);
+            // Oculta el spinner y muestra el contenido al tener éxito
+            if (loadingEl) loadingEl.classList.add('hidden');
+            if (contentEl) contentEl.classList.remove('hidden');
+        } else {
+            alert('❌ Error: ' + result.message);
+            // Oculta el modal si hay un error
+            closeMonthlyReportModal();
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('❌ Error al cargar el reporte mensual');
+        // Oculta el modal si hay un error
+        closeMonthlyReportModal();
+    }
+}
+
+function renderMonthlyReport(data) {
+    const contentEl = document.getElementById('monthly-report-content');
+    if (!contentEl) return;
+    
+    const summary = data.summary;
+    const events = data.events;
+    
+    // Generación dinámica del contenido (Tu código original)
+    contentEl.innerHTML = `
+        <div class="space-y-6">
+            <div class="text-center pb-4 border-b border-border-color">
+                <h3 class="text-2xl font-bold text-white mb-2">Reporte Mensual</h3>
+                <p class="text-text-light">${data.period.display}</p>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-4">
+                <div class="bg-bg-card p-4 rounded-lg border border-border-color text-center">
+                    <div class="text-text-light text-xs mb-1">Eventos</div>
+                    <div class="text-3xl font-bold text-white">${summary.total_events}</div>
+                </div>
+                
+                <div class="bg-bg-card p-4 rounded-lg border border-border-color text-center">
+                    <div class="text-text-light text-xs mb-1">Participantes</div>
+                    <div class="text-3xl font-bold text-white">${summary.total_participants}</div>
+                </div>
+                
+                <div class="bg-bg-card p-4 rounded-lg border border-border-color text-center">
+                    <div class="text-text-light text-xs mb-1">Pagos</div>
+                    <div class="text-3xl font-bold text-white">${summary.payments.confirmed_count}</div>
+                </div>
+            </div>
+            
+            <div style="background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(59,130,246,0.2)); padding: 16px; border-radius: 12px; border: 1px solid rgba(16,185,129,0.3);">
+                <h4 class="text-white font-semibold mb-3 flex items-center gap-2">
+                    <i class="fas fa-chart-line"></i> Resumen Financiero
+                </h4>
+                
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-text-light">Pagos Confirmados</span>
+                        <span class="font-bold text-lg" style="color: #10B981;">${formatCurrency(summary.payments.confirmed)}</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <span class="text-text-light">Pagos Pendientes</span>
+                        <span class="font-bold text-lg" style="color: #FACC15;">${formatCurrency(summary.payments.pending)}</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-text-light">${summary.payments.confirmed_count} confirmados • ${summary.payments.pending_count} pendientes</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div>
+                <h4 class="text-white font-semibold mb-3 flex items-center gap-2">
+                    <i class="fas fa-calendar"></i> Eventos del Mes (${events.length})
+                </h4>
+                
+                ${events.length === 0 ? `
+                    <p class="text-text-light text-center py-8">No hay eventos en este período</p>
+                ` : `
+                    <div class="space-y-3" style="max-height: 400px; overflow-y: auto;">
+                        ${events.map(item => `
+                            <div class="bg-bg-card p-4 rounded-lg border border-border-color">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div class="flex-1">
+                                        <div class="font-semibold text-white">${item.event.title}</div>
+                                        <div class="text-sm text-text-light">${formatDate(item.event.date)} • ${item.event.location}</div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-sm text-text-light">Participantes</div>
+                                        <div class="font-bold text-white">${item.event.participants_count}</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-border-color">
+                                    <div>
+                                        <div class="text-xs text-text-light">Confirmados</div>
+                                        <div class="font-semibold" style="color: #10B981;">${formatCurrency(item.payments.confirmed)}</div>
+                                        <div class="text-xs text-text-light">${item.payments.confirmed_count} pagos</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-xs text-text-light">Pendientes</div>
+                                        <div class="font-semibold" style="color: #FACC15;">${formatCurrency(item.payments.pending)}</div>
+                                        <div class="text-xs text-text-light">${item.payments.pending_count} pagos</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `}
+            </div>
+            
+            <div class="flex gap-3 pt-4">
+                <button onclick="downloadMonthlyReport()" class="flex-1 text-white py-3 rounded-lg font-semibold transition" style="background-color: var(--accent-blue);">
+                    <i class="fas fa-download mr-2"></i>Descargar
+                </button>
+                <button onclick="closeMonthlyReportModal()" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg font-semibold transition">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+// 🛑 FUNCIÓN DE CIERRE DE RF9 (ASIGNADA AL BOTÓN 'X' Y 'CERRAR')
+function closeMonthlyReportModal() {
+    const modal = document.getElementById('monthly-report-modal');
+    if (modal) {
+        modal.classList.add('hidden'); // Oculta el modal
+    }
+}
+
+// ===============================================
+// OTRAS FUNCIONES (Incluidas para completar)
+// ===============================================
+
+function downloadEventReport() {
+    alert('🚧 Función de descarga PDF en desarrollo. Por ahora puedes imprimir esta pantalla (Ctrl+P)');
+    window.print();
+}
+
+function downloadMonthlyReport() {
+    alert('🚧 Función de descarga PDF en desarrollo. Por ahora puedes imprimir esta pantalla (Ctrl+P)');
+    window.print();
 }
 
 function logout() {
